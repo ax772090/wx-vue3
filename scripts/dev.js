@@ -12,7 +12,6 @@ const target = args._[0] || 'vue'
 const format = args.f || 'global'
 const inlineDeps = args.i || args.inline
 const pkg = require(resolve(__dirname, `../packages/${target}/package.json`))
-
 // resolve output
 const outputFormat = format.startsWith('global')
   ? 'iife'
