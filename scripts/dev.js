@@ -8,7 +8,7 @@ const nodePolyfills = require('@esbuild-plugins/node-modules-polyfill')
 const { resolve, relative } = require('path')
 const args = require('minimist')(process.argv.slice(2))
 
-const target = args._[0] || 'vue'
+const target = args._[0] || 'vue' // 如果没有指定打包模块，就会从vue模块进行打包
 const format = args.f || 'global'
 const inlineDeps = args.i || args.inline
 const pkg = require(resolve(__dirname, `../packages/${target}/package.json`))

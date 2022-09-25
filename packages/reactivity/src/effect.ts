@@ -105,7 +105,7 @@ export class ReactiveEffect<T = any> {
       if (effectTrackDepth <= maxMarkerBits) {
         initDepMarkers(this)
       } else {
-        cleanupEffect(this)
+        cleanupEffect(this)  
       }
       return this.fn()
     } finally {
@@ -138,7 +138,7 @@ export class ReactiveEffect<T = any> {
     }
   }
 }
-
+// 清理effct:双向清理
 function cleanupEffect(effect: ReactiveEffect) {
   const { deps } = effect
   if (deps.length) {
@@ -167,6 +167,7 @@ export interface ReactiveEffectRunner<T = any> {
   effect: ReactiveEffect
 }
 
+// effect源码
 export function effect<T = any>(
   fn: () => T,
   options?: ReactiveEffectOptions
@@ -210,6 +211,7 @@ export function resetTracking() {
   shouldTrack = last === undefined ? true : last
 }
 
+// 依赖收集
 export function track(target: object, type: TrackOpTypes, key: unknown) {
   if (shouldTrack && activeEffect) {
     let depsMap = targetMap.get(target)
@@ -256,6 +258,7 @@ export function trackEffects(
   }
 }
 
+// 触发更新
 export function trigger(
   target: object,
   type: TriggerOpTypes,

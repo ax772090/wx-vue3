@@ -77,6 +77,8 @@ export function ref<T extends object>(
 ): [T] extends [Ref] ? T : Ref<UnwrapRef<T>>
 export function ref<T>(value: T): Ref<UnwrapRef<T>>
 export function ref<T = any>(): Ref<T | undefined>
+
+// ref源码
 export function ref(value?: unknown) {
   return createRef(value, false)
 }
@@ -101,6 +103,7 @@ function createRef(rawValue: unknown, shallow: boolean) {
   return new RefImpl(rawValue, shallow)
 }
 
+// 主要是这个类
 class RefImpl<T> {
   private _value: T
   private _rawValue: T

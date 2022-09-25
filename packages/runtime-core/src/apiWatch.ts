@@ -217,7 +217,7 @@ function doWatch(
       source.map(s => {
         if (isRef(s)) {
           return s.value
-        } else if (isReactive(s)) {
+        } else if ( (s)) {
           return traverse(s)
         } else if (isFunction(s)) {
           return callWithErrorHandling(s, instance, ErrorCodes.WATCH_GETTER)
@@ -350,6 +350,7 @@ function doWatch(
     scheduler = () => queueJob(job)
   }
 
+  // 1. watch本质也是用了ReactiveEffect
   const effect = new ReactiveEffect(getter, scheduler)
 
   if (__DEV__) {
@@ -357,7 +358,7 @@ function doWatch(
     effect.onTrigger = onTrigger
   }
 
-  // initial run
+  // 2. initial run
   if (cb) {
     if (immediate) {
       job()
@@ -423,6 +424,8 @@ export function createPathGetter(ctx: any, path: string) {
   }
 }
 
+// 如果传入的是个对象，如下面这样，则会递归调用target进行依赖收集，建议不要直接使用target
+// watch(target,()=>{})
 export function traverse(value: unknown, seen?: Set<unknown>) {
   if (!isObject(value) || (value as any)[ReactiveFlags.SKIP]) {
     return value

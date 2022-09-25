@@ -15,35 +15,53 @@
     <script src="../dist/vue.global.js"></script>
     <script>
         const { createApp,computed,watch,ref,reactive } =  Vue
+        const obj = { name: 'wx', age: 18 }
+        const proxy1 = reactive(obj)
+        // effect(() => {
+        //     proxy1.name
+        // })
         debugger
+        const nameAge = computed(()=>{
+            console.log('aa');
+            return proxy1.name + proxy1.age
+        })
+        console.log(nameAge.value);
 
-        createApp({
-            setup() {
-                // const obj = reactive({
-                //     firstName:'w',
-                //     secondName:'x'
-                // })
-                // const name = computed(()=>obj.firstName + obj.secondName)
-                // setTimeout(() => {
-                //     console.log('cc');
-                //     obj.firstName = 'aaa'
-                // }, 1000);
-                // watch(()=>obj.firstName,(newValue,oldValue)=>{
-                //     console.log(newValue,oldValue)
-                // })
-                // return {
-                //     name
-                // }
+        // effect(()=>{
 
-                const ref1 = ref(1)
-                const ref2 = reactive({value: 2})
-                console.log(ref1,ref2);
-                return {
-                    ref1,
-                    ...ref2
-                }
-            }
-        }).mount('#app')
+        // })
+
+        setTimeout(() => {
+            proxy1.name = 'yc'
+        }, 1000);
+
+        // createApp({
+        //     setup() {
+        //         // const obj = reactive({
+        //         //     firstName:'w',
+        //         //     secondName:'x'
+        //         // })
+        //         // const name = computed(()=>obj.firstName + obj.secondName)
+        //         // setTimeout(() => {
+        //         //     console.log('cc');
+        //         //     obj.firstName = 'aaa'
+        //         // }, 1000);
+        //         // watch(()=>obj.firstName,(newValue,oldValue)=>{
+        //         //     console.log(newValue,oldValue)
+        //         // })
+        //         // return {
+        //         //     name
+        //         // }
+
+        //         const ref1 = ref(1)
+        //         const ref2 = reactive({value: 2})
+        //         console.log(ref1,ref2);
+        //         return {
+        //             ref1,
+        //             ...ref2
+        //         }
+        //     }
+        // }).mount('#app')
     </script>
 </body>
 

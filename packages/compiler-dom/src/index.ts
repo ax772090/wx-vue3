@@ -41,6 +41,7 @@ export function compile(
   template: string,
   options: CompilerOptions = {}
 ): CodegenResult {
+  debugger
   return baseCompile(
     template,
     extend({}, parserOptions, options, {
