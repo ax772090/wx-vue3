@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="./packages/compiler-dom/dist/compiler-dom.global.js"></script>
+    <script>
+        console.log(VueCompilerDOM);
+        const template = `
+            <div>
+                <h1 v-if='ok'>vue template</h1>
+            </div>
+        `
+        const { compile } = VueCompilerDOM
+        let code = compile(template)
+        console.log(code);
+        // const templateAST = parse(template)
+
+        // console.log(templateAST);
+        // const jsAST = transform(templateAST)
+        // console.log(jsAST);
+        // const code = generate(jsAST)
+        // console.log(code);
+    </script>
+</body>
+
+</html>

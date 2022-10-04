@@ -33,6 +33,7 @@ const buildTypes = args.t || args.types || isRelease
 const buildAllMatching = args.all || args.a
 const commit = execa.sync('git', ['rev-parse', 'HEAD']).stdout.slice(0, 7)
 
+debugger
 run()
 
 async function run() {
@@ -50,9 +51,17 @@ async function run() {
 }
 
 async function buildAll(targets) {
+  console.log('-----cpus-----',require('os').cpus().length);
   await runParallel(require('os').cpus().length, targets, build)
 }
 
+/**
+ * 
+ * @param {*} maxConcurrency 最大并发数
+ * @param {*} source 资源
+ * @param {*} iteratorFn 构建函数
+ * @returns 
+ */
 async function runParallel(maxConcurrency, source, iteratorFn) {
   const ret = []
   const executing = []

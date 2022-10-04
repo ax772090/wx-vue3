@@ -81,7 +81,7 @@ export function baseCompile(
   if (options.scopeId && !isModuleMode) {
     onError(createCompilerError(ErrorCodes.X_SCOPE_ID_NOT_SUPPORTED))
   }
-
+ // 1. parse
   const ast = isString(template) ? baseParse(template, options) : template
   const [nodeTransforms, directiveTransforms] =
     getBaseTransformPreset(prefixIdentifiers)
@@ -92,7 +92,7 @@ export function baseCompile(
       options.expressionPlugins = [...(expressionPlugins || []), 'typescript']
     }
   }
-
+// 2. transform
   transform(
     ast,
     extend({}, options, {
@@ -108,7 +108,7 @@ export function baseCompile(
       )
     })
   )
-
+// 3.generate
   return generate(
     ast,
     extend({}, options, {

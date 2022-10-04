@@ -315,12 +315,15 @@ export function createTransformContext(
 }
 
 export function transform(root: RootNode, options: TransformOptions) {
+  // 1.创建transform上下文
   const context = createTransformContext(root, options)
+  // 2. 遍历节点-深度递归-针对不同的节点执行不同的转换函数
   traverseNode(root, context)
   if (options.hoistStatic) {
     hoistStatic(root, context)
   }
   if (!options.ssr) {
+    // 3. 创建根代码
     createRootCodegen(root, context)
   }
   // finalize meta information

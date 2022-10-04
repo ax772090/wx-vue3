@@ -92,7 +92,7 @@ export interface SFCParseResult {
 }
 
 const sourceToSFC = createCache<SFCParseResult>()
-
+// 模版字符串=》模版ast的过程
 export function parse(
   source: string,
   {
@@ -125,6 +125,7 @@ export function parse(
   }
 
   const errors: (CompilerError | SyntaxError)[] = []
+  // 1. compiler.parse
   const ast = compiler.parse(source, {
     // there are no components at SFC parsing level
     isNativeTag: () => true,
