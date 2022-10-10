@@ -61,10 +61,10 @@ const resolveTarget = <T = RendererElement>(
     return targetSelector as any
   }
 }
-
+// 定义teleport组件
 export const TeleportImpl = {
-  __isTeleport: true,
-  process(
+  __isTeleport: true,// 标识
+  process(// 处理函数
     n1: TeleportVNode | null,
     n2: TeleportVNode,
     container: RendererElement,

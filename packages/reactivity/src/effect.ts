@@ -96,6 +96,7 @@ export class ReactiveEffect<T = any> {
       parent = parent.parent
     }
     try {
+      debugger
       this.parent = activeEffect
       activeEffect = this
       shouldTrack = true
@@ -213,6 +214,7 @@ export function resetTracking() {
 
 // 依赖收集
 export function track(target: object, type: TrackOpTypes, key: unknown) {
+  debugger
   if (shouldTrack && activeEffect) {
     let depsMap = targetMap.get(target)
     if (!depsMap) {
@@ -368,6 +370,7 @@ function triggerEffect(
   effect: ReactiveEffect,
   debuggerEventExtraInfo?: DebuggerEventExtraInfo
 ) {
+  debugger
   if (effect !== activeEffect || effect.allowRecurse) {
     if (__DEV__ && effect.onTrigger) {
       effect.onTrigger(extend({ effect }, debuggerEventExtraInfo))

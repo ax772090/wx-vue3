@@ -40,6 +40,7 @@ let renderer: Renderer<Element | ShadowRoot> | HydrationRenderer
 let enabledHydration = false
 
 function ensureRenderer() {
+  // 判断renderer渲染器是否存在，不存在就去创建
   return (
     renderer ||
     (renderer = createRenderer<Node, Element | ShadowRoot>(rendererOptions))
@@ -58,12 +59,14 @@ function ensureHydrationRenderer() {
 export const render = ((...args) => {
   ensureRenderer().render(...args)
 }) as RootRenderFunction<Element | ShadowRoot>
-
+// 激活过程
 export const hydrate = ((...args) => {
   ensureHydrationRenderer().hydrate(...args)
 }) as RootHydrateFunction
 
+// 入口
 export const createApp = ((...args) => {
+  // 1. ensureRenderer构建渲染器，不同的平台传入不同的参数进行构建，创建了一个app对象
   const app = ensureRenderer().createApp(...args)
 
   if (__DEV__) {
@@ -72,11 +75,16 @@ export const createApp = ((...args) => {
   }
 
   const { mount } = app
+  // 2. 重写了app对象本来的mount方法，这才是真正的mount，也就是我们平常代码里面用的就是这个
+  // 这才是dom的挂载，app上那个是runtime-core，其它平台也会调用的，不一定是浏览器
   app.mount = (containerOrSelector: Element | ShadowRoot | string): any => {
+    // 1. 规范化容器，拿到容器
     const container = normalizeContainer(containerOrSelector)
     if (!container) return
 
+    // 2.拿到root组件
     const component = app._component
+    // 如果组件不是函数，也没有render方法，也没有模版，则使用innerHTML作为内容
     if (!isFunction(component) && !component.render && !component.template) {
       // __UNSAFE__
       // Reason: potential execution of JS expressions in in-DOM template.
@@ -99,7 +107,9 @@ export const createApp = ((...args) => {
     }
 
     // clear content before mounting
+    // 3.先清除挂载点上之前的内容
     container.innerHTML = ''
+    // 4. 真正的挂载操作：里面就两步：创建vnode,渲染vnode
     const proxy = mount(container, false, container instanceof SVGElement)
     if (container instanceof Element) {
       container.removeAttribute('v-cloak')
@@ -107,10 +117,11 @@ export const createApp = ((...args) => {
     }
     return proxy
   }
-
+  // 3. 最后返回了app
   return app
 }) as CreateAppFunction<Element>
 
+// 服务端渲染创建入口
 export const createSSRApp = ((...args) => {
   const app = ensureHydrationRenderer().createApp(...args)
 

@@ -9,25 +9,37 @@
 </head>
 
 <body>
-    <script src="./packages/compiler-dom/dist/compiler-dom.global.js"></script>
+    <div id="app"></div>
+    <script src="./packages/vue/dist/vue.global.js"> </script>
     <script>
-        console.log(VueCompilerDOM);
-        const template = `
-            <div>
-                <h1 v-if='ok'>vue template</h1>
-            </div>
-        `
-        const { compile } = VueCompilerDOM
-        let code = compile(template)
-        console.log(code);
-        // const templateAST = parse(template)
+        const { createApp, ref, reactive,shallowReactive, h, onMounted } = Vue
 
-        // console.log(templateAST);
-        // const jsAST = transform(templateAST)
-        // console.log(jsAST);
-        // const code = generate(jsAST)
-        // console.log(code);
+        createApp({
+            setup() {
+                const count = ref(0)
+                const obj = shallowReactive({ wx: 'wx', age: 18, addres: { a: 1, b: 2 } })
+                console.log('shallow',obj);
+                setTimeout(() => {
+                    // count.value++
+                    obj.addres.a = 5
+                }, 1000)
+                onMounted(() => {
+                    console.log('onMounted', count.value);
+                })
+                return { count, obj }
+            },
+            render() {
+                return h('div', null, [
+                    h('p', null, 'hello'),
+                    h('p', null, `count的值：${this.count}`),
+                    h('p', null, this.obj.wx),
+                    h('p', null, this.obj.age),
+                    h('p', null, this.obj.addres.a),
+                ])
+            }
+        }).mount('#app')
     </script>
+
 </body>
 
 </html>

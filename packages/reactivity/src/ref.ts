@@ -97,6 +97,7 @@ export function shallowRef(value?: unknown) {
 }
 
 function createRef(rawValue: unknown, shallow: boolean) {
+  // 如果本身就是ref,则直接返回
   if (isRef(rawValue)) {
     return rawValue
   }

@@ -592,7 +592,7 @@ export function isStatefulComponent(instance: ComponentInternalInstance) {
 }
 
 export let isInSSRComponentSetup = false
-
+// initProps and initSlots
 export function setupComponent(
   instance: ComponentInternalInstance,
   isSSR = false
@@ -601,9 +601,11 @@ export function setupComponent(
 
   const { props, children } = instance.vnode
   const isStateful = isStatefulComponent(instance)
+  // 1. 初始化组件的props和slots
   initProps(instance, props, isStateful, isSSR)
   initSlots(instance, children)
 
+  // 2. setupStatefulComponent
   const setupResult = isStateful
     ? setupStatefulComponent(instance, isSSR)
     : undefined
@@ -651,7 +653,9 @@ function setupStatefulComponent(
   }
   // 2. call setup()
   const { setup } = Component
+  // 有setup
   if (setup) {
+    // 创建setup上下文
     const setupContext = (instance.setupContext =
       setup.length > 1 ? createSetupContext(instance) : null)
 
@@ -665,7 +669,7 @@ function setupStatefulComponent(
     )
     resetTracking()
     unsetCurrentInstance()
-
+    // 如果是 promise，如 async setup(){}
     if (isPromise(setupResult)) {
       setupResult.then(unsetCurrentInstance, unsetCurrentInstance)
       if (isSSR) {
@@ -697,9 +701,11 @@ function setupStatefulComponent(
         )
       }
     } else {
+      // 判断是函数还是对象
       handleSetupResult(instance, setupResult, isSSR)
     }
   } else {
+    // 没有setup
     finishComponentSetup(instance, isSSR)
   }
 }
@@ -709,6 +715,7 @@ export function handleSetupResult(
   setupResult: unknown,
   isSSR: boolean
 ) {
+  // 如果是函数，会作为render函数
   if (isFunction(setupResult)) {
     // setup returned an inline render function
     if (__SSR__ && (instance.type as ComponentOptions).__ssrInlineRender) {
@@ -718,6 +725,7 @@ export function handleSetupResult(
     } else {
       instance.render = setupResult as InternalRenderFunction
     }
+    // 如果是对象，通过proxyRefs做一层ref 代理
   } else if (isObject(setupResult)) {
     if (__DEV__ && isVNode(setupResult)) {
       warn(
@@ -741,6 +749,7 @@ export function handleSetupResult(
       }`
     )
   }
+  // 最后都会执行finishComponentSetup
   finishComponentSetup(instance, isSSR)
 }
 
@@ -768,6 +777,7 @@ export function registerRuntimeCompiler(_compile: any) {
 // dev only
 export const isRuntimeOnly = () => !compile
 
+// 这个才是最后的
 export function finishComponentSetup(
   instance: ComponentInternalInstance,
   isSSR: boolean,
@@ -785,6 +795,7 @@ export function finishComponentSetup(
 
   // template / render function normalization
   // could be already set when returned from setup()
+  // 实例上没有render函数
   if (!instance.render) {
     // only do on-the-fly compile if not in SSR - SSR on-the-fly compilation
     // is done by server-renderer
@@ -795,6 +806,7 @@ export function finishComponentSetup(
           instance.vnode.props['inline-template']) ||
         Component.template ||
         resolveMergedOptions(instance).template
+      // 有模版template
       if (template) {
         if (__DEV__) {
           startMeasure(instance, `compile`)
@@ -820,13 +832,14 @@ export function finishComponentSetup(
             extend(finalCompilerOptions.compatConfig, Component.compatConfig)
           }
         }
+        // 将模版编译成render函数
         Component.render = compile(template, finalCompilerOptions)
         if (__DEV__) {
           endMeasure(instance, `compile`)
         }
       }
     }
-
+    // 最终都是要转化为render函数
     instance.render = (Component.render || NOOP) as InternalRenderFunction
 
     // for runtime-compiled render functions using `with` blocks, the render
@@ -848,6 +861,7 @@ export function finishComponentSetup(
 
   // warn missing template/render
   // the runtime compilation of template in SSR is done by server-render
+  // 如果既没有template也没有render函数那就报警告
   if (__DEV__ && !Component.render && instance.render === NOOP && !isSSR) {
     /* istanbul ignore if */
     if (!compile && Component.template) {

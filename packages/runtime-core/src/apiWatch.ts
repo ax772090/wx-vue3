@@ -209,7 +209,7 @@ function doWatch(
     forceTrigger = isShallow(source)
   } else if (isReactive(source)) {
     getter = () => source
-    deep = true
+    deep = true // 如果传了响应式对象，这里deep就是true
   } else if (isArray(source)) {
     isMultiSource = true
     forceTrigger = source.some(s => isReactive(s) || isShallow(s))
@@ -232,6 +232,7 @@ function doWatch(
         callWithErrorHandling(source, instance, ErrorCodes.WATCH_GETTER)
     } else {
       // no cb -> simple effect
+      // watchEffect在这里
       getter = () => {
         if (instance && instance.isUnmounted) {
           return
@@ -424,7 +425,7 @@ export function createPathGetter(ctx: any, path: string) {
   }
 }
 
-// 如果传入的是个对象，如下面这样，则会递归调用target进行依赖收集，建议不要直接使用target
+// 如果传入的是个响应式对象，如下面这样，则会递归调用target进行依赖收集，建议不要直接使用target
 // watch(target,()=>{})
 export function traverse(value: unknown, seen?: Set<unknown>) {
   if (!isObject(value) || (value as any)[ReactiveFlags.SKIP]) {

@@ -401,7 +401,7 @@ const normalizeRef = ({
   ) as any
 }
 
-// 真正创建节点的函数
+// 真正创建vnode的函数
 function createBaseVNode(
   type: VNodeTypes | ClassComponent | typeof NULL_DYNAMIC_COMPONENT,
   props: (Data & VNodeProps) | null = null,
@@ -412,6 +412,7 @@ function createBaseVNode(
   isBlockNode = false,
   needFullChildrenNormalization = false
 ) {
+  // vnode初始化属性
   const vnode = {
     __v_isVNode: true,
     __v_skip: true,
@@ -441,6 +442,7 @@ function createBaseVNode(
   } as VNode
 
   if (needFullChildrenNormalization) {
+    // 处理vnode的子节点
     normalizeChildren(vnode, children)
     // normalize suspense children
     if (__FEATURE_SUSPENSE__ && shapeFlag & ShapeFlags.SUSPENSE) {
@@ -488,11 +490,11 @@ function createBaseVNode(
 
 export { createBaseVNode as createElementVNode }
 
+// 创建虚拟dom节点的入口
 export const createVNode = (
   __DEV__ ? createVNodeWithArgsTransform : _createVNode
 ) as typeof _createVNode
 
-// 创建虚拟节点的内部函数
 function _createVNode(
   type: VNodeTypes | ClassComponent | typeof NULL_DYNAMIC_COMPONENT,
   props: (Data & VNodeProps) | null = null,
@@ -556,6 +558,7 @@ function _createVNode(
   }
 
   // encode the vnode type information into a bitmap
+  // 方便后序操作：将类型转换为bit
   const shapeFlag = isString(type)
     ? ShapeFlags.ELEMENT
     : __FEATURE_SUSPENSE__ && isSuspense(type)

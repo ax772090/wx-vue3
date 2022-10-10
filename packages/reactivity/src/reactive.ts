@@ -89,6 +89,7 @@ export type UnwrapNestedRefs<T> = T extends Ref ? T : UnwrapRefSimple<T>
 export function reactive<T extends object>(target: T): UnwrapNestedRefs<T>
 export function reactive(target: object) {
   // if trying to observe a readonly proxy, return the readonly version.
+  // 只读的不能做代理
   if (isReadonly(target)) {
     return target
   }
@@ -185,7 +186,8 @@ function createReactiveObject(
   collectionHandlers: ProxyHandler<any>,
   proxyMap: WeakMap<Target, any>
 ) {
-  if (!isObject(target)) {
+  // 如果不是对象，直接返回
+  if (!isObject(target)) {// 这里其实就包括了数组
     if (__DEV__) {
       console.warn(`value cannot be made reactive: ${String(target)}`)
     }
@@ -193,6 +195,7 @@ function createReactiveObject(
   }
   // target is already a Proxy, return it.
   // exception: calling readonly() on a reactive object
+  // 已经是一个代理对象了，那就直接返回
   if (
     target[ReactiveFlags.RAW] &&
     !(isReadonly && target[ReactiveFlags.IS_REACTIVE])
@@ -200,19 +203,23 @@ function createReactiveObject(
     return target
   }
   // target already has corresponding Proxy
+  // 优先通过target找之前创建的代理对象，找到了，直接返回已有的
   const existingProxy = proxyMap.get(target)
   if (existingProxy) {
     return existingProxy
   }
   // only specific value types can be observed.
+  // 只有那6中类型能用proxy来代理
   const targetType = getTargetType(target)
   if (targetType === TargetType.INVALID) {
     return target
   }
+  // 针对几何和其他类型做不同的处理
   const proxy = new Proxy(
     target,
     targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers
   )
+  // 存储到map中，避免重复创建，建立target原始对象和proxy代理对象之间的联系
   proxyMap.set(target, proxy)
   return proxy
 }

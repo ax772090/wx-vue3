@@ -178,6 +178,7 @@ export function createAppAPI<HostElement>(
   render: RootRenderFunction<HostElement>,
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
+  // 返回了一个函数，
   return function createApp(rootComponent, rootProps = null) {
     if (!isFunction(rootComponent)) {
       rootComponent = { ...rootComponent }
@@ -188,11 +189,13 @@ export function createAppAPI<HostElement>(
       rootProps = null
     }
 
+    // 1. 创建当前app的上下文
     const context = createAppContext()
+    // 插件缓存
     const installedPlugins = new Set()
 
     let isMounted = false
-
+    // 2. 构建app
     const app: App = (context.app = {
       _uid: uid++,
       _component: rootComponent as ConcreteComponent,
@@ -214,8 +217,9 @@ export function createAppAPI<HostElement>(
           )
         }
       },
-
+      // 最重要的use插件：plugin要么是一个函数要么是一个带install方法的对象
       use(plugin: Plugin, ...options: any[]) {
+        // 如果已经有了
         if (installedPlugins.has(plugin)) {
           __DEV__ && warn(`Plugin has already been applied to target app.`)
         } else if (plugin && isFunction(plugin.install)) {
@@ -277,7 +281,7 @@ export function createAppAPI<HostElement>(
         context.directives[name] = directive
         return app
       },
-
+      // 组件的挂载操作,不同平台
       mount(
         rootContainer: HostElement,
         isHydrate?: boolean,
@@ -292,15 +296,18 @@ export function createAppAPI<HostElement>(
                 ` you need to unmount the previous app by calling \`app.unmount()\` first.`
             )
           }
+          // 1. 创建vnode
           const vnode = createVNode(
             rootComponent as ConcreteComponent,
             rootProps
           )
           // store app context on the root VNode.
           // this will be set on the root instance on initial mount.
+          //  缓存app的上下文到 root vnode上
           vnode.appContext = context
 
           // HMR root reload
+          // 热更新
           if (__DEV__) {
             context.reload = () => {
               render(cloneVNode(vnode), rootContainer, isSVG)
@@ -310,6 +317,7 @@ export function createAppAPI<HostElement>(
           if (isHydrate && hydrate) {
             hydrate(vnode as VNode<Node, Element>, rootContainer as any)
           } else {
+            // 2.渲染vnode   render渲染虚拟节点
             render(vnode, rootContainer, isSVG)
           }
           isMounted = true
@@ -332,7 +340,7 @@ export function createAppAPI<HostElement>(
           )
         }
       },
-
+      // 卸载
       unmount() {
         if (isMounted) {
           render(null, app._container)
@@ -345,7 +353,7 @@ export function createAppAPI<HostElement>(
           warn(`Cannot unmount an app that is not mounted.`)
         }
       },
-
+      // 全局的provide
       provide(key, value) {
         if (__DEV__ && (key as string | symbol) in context.provides) {
           warn(
@@ -363,7 +371,7 @@ export function createAppAPI<HostElement>(
     if (__COMPAT__) {
       installAppCompatProperties(app, context, render)
     }
-
+    // 3.返回app
     return app
   }
 }

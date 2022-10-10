@@ -52,6 +52,7 @@ const shallowReadonlyGet = /*#__PURE__*/ createGetter(true, true)
 
 const arrayInstrumentations = /*#__PURE__*/ createArrayInstrumentations()
 
+// 对数组的一些特殊处理
 function createArrayInstrumentations() {
   const instrumentations: Record<string, Function> = {}
   // instrument identity-sensitive Array methods to account for possible reactive
@@ -76,7 +77,7 @@ function createArrayInstrumentations() {
   // which leads to infinite loops in some cases (#2137)
   ;(['push', 'pop', 'shift', 'unshift', 'splice'] as const).forEach(key => {
     instrumentations[key] = function (this: unknown[], ...args: unknown[]) {
-      pauseTracking()
+      pauseTracking()// 停止追踪
       const res = (toRaw(this) as any)[key].apply(this, args)
       resetTracking()
       return res
@@ -115,15 +116,18 @@ function createGetter(isReadonly = false, shallow = false) {
     }
 
     const res = Reflect.get(target, key, receiver)
+    // 对res结果做进一步处理，比如，如果是浅响应，那么就不会递归再去做响应式
 
+    //对symbol类型的key做处理，
     if (isSymbol(key) ? builtInSymbols.has(key) : isNonTrackableKeys(key)) {
       return res
     }
-
+    // 只读属性不需要依赖收集
     if (!isReadonly) {
       track(target, TrackOpTypes.GET, key)
     }
 
+    // 如果是浅层的，则直接返回Reflect.get的结果
     if (shallow) {
       return res
     }
@@ -132,11 +136,12 @@ function createGetter(isReadonly = false, shallow = false) {
       // ref unwrapping - skip unwrap for Array + integer key.
       return targetIsArray && isIntegerKey(key) ? res : res.value
     }
-
+    // 如果结果是对象，递归调用reactive实现深响应
     if (isObject(res)) {
       // Convert returned value into a proxy as well. we do the isObject check
       // here to avoid invalid value warning. Also need to lazy access readonly
       // and reactive here to avoid circular dependency.
+      // 如果是只读的，则调用readonly对值进行包装
       return isReadonly ? readonly(res) : reactive(res)
     }
 
