@@ -16,6 +16,7 @@
 
         createApp({
             setup() {
+                debugger
                 const count = ref(0)
                 const obj = shallowReactive({ wx: 'wx', age: 18, addres: { a: 1, b: 2 } })
                 console.log('shallow',obj);

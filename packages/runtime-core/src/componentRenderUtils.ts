@@ -60,6 +60,7 @@ export function renderComponentRoot(
     ctx,
     inheritAttrs
   } = instance
+  debugger
 
   let result
   let fallthroughAttrs
@@ -69,10 +70,12 @@ export function renderComponentRoot(
   }
 
   try {
+    // 1. 判断是有状态组件
     if (vnode.shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
       // withProxy is a proxy with a different `has` trap only for
       // runtime-compiled render functions using `with` block.
       const proxyToUse = withProxy || proxy
+      // result是render函数执行后格式化的vnode
       result = normalizeVNode(
         // ******************render函数就是在这里被调用的**************
         render!.call(

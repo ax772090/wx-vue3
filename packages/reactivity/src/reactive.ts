@@ -224,6 +224,7 @@ function createReactiveObject(
   return proxy
 }
 
+
 export function isReactive(value: unknown): boolean {
   if (isReadonly(value)) {
     return isReactive((value as Target)[ReactiveFlags.RAW])

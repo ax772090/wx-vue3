@@ -814,7 +814,7 @@ function baseCreateRenderer(
       )
     }
   }
-// 
+// 更新元素
   const patchElement = (
     n1: VNode,
     n2: VNode,
@@ -2379,7 +2379,7 @@ function baseCreateRenderer(
     }
     return hostNextSibling((vnode.anchor || vnode.el)!)
   }
-  // 真正的render函数
+  // 真正的vnode变成真实dom
   const render: RootRenderFunction = (vnode, container, isSVG) => {
     // vnode是空就是卸载操作
     if (vnode == null) {
