@@ -29,7 +29,7 @@ export class ComputedRefImpl<T> {
   private _value!: T
   public readonly effect: ReactiveEffect<T>
 
-  public readonly __v_isRef = true
+  public readonly __v_isRef = true // 是否ref标识
   public readonly [ReactiveFlags.IS_READONLY]: boolean = false
 
   public _dirty = true
@@ -51,14 +51,14 @@ export class ComputedRefImpl<T> {
     this.effect.active = this._cacheable = !isSSR
     this[ReactiveFlags.IS_READONLY] = isReadonly
   }
-
+// 属性访问器
   get value() {
     // the computed ref may get wrapped by other proxies e.g. readonly() #3376
     const self = toRaw(this)
     trackRefValue(self)
     if (self._dirty || !self._cacheable) {
       self._dirty = false
-      self._value = self.effect.run()!
+      self._value = self.effect.run()! // 掉了run才会执行 getter
     }
     return self._value
   }

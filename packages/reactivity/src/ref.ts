@@ -110,7 +110,7 @@ class RefImpl<T> {
   private _rawValue: T
 
   public dep?: Dep = undefined
-  public readonly __v_isRef = true
+  public readonly __v_isRef = true // 标识是否是一个ref
 
   constructor(value: T, public readonly __v_isShallow: boolean) {
     this._rawValue = __v_isShallow ? value : toRaw(value)
@@ -137,7 +137,7 @@ class RefImpl<T> {
 export function triggerRef(ref: Ref) {
   triggerRefValue(ref, __DEV__ ? ref.value : void 0)
 }
-
+// 脱ref
 export function unref<T>(ref: T | Ref<T>): T {
   return isRef(ref) ? (ref.value as any) : ref
 }
@@ -147,6 +147,7 @@ const shallowUnwrapHandlers: ProxyHandler<any> = {
   set: (target, key, value, receiver) => {
     const oldValue = target[key]
     if (isRef(oldValue) && !isRef(value)) {
+      // 如果值是ref，则设置对应的value属性值
       oldValue.value = value
       return true
     } else {
@@ -154,7 +155,7 @@ const shallowUnwrapHandlers: ProxyHandler<any> = {
     }
   }
 }
-
+// setup的返回值如果是对象，
 export function proxyRefs<T extends object>(
   objectWithRefs: T
 ): ShallowUnwrapRef<T> {
@@ -204,6 +205,7 @@ export function customRef<T>(factory: CustomRefFactory<T>): Ref<T> {
 export type ToRefs<T = any> = {
   [K in keyof T]: ToRef<T[K]>
 }
+// 用来解决响应式丢失问题
 export function toRefs<T extends object>(object: T): ToRefs<T> {
   if (__DEV__ && !isProxy(object)) {
     console.warn(`toRefs() expects a reactive object but received a plain one.`)
@@ -246,7 +248,7 @@ export function toRef<T extends object, K extends keyof T>(
   key: K,
   defaultValue: T[K]
 ): ToRef<Exclude<T[K], undefined>>
-
+// 转换成ref
 export function toRef<T extends object, K extends keyof T>(
   object: T,
   key: K,

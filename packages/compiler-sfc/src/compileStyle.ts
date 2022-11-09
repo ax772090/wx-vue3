@@ -89,7 +89,6 @@ export function compileStyleAsync(
 export function doCompileStyle(
   options: SFCAsyncStyleCompileOptions
 ): SFCStyleCompileResults | Promise<SFCStyleCompileResults> {
-  debugger
   const {
     filename,
     id,

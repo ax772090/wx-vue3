@@ -60,7 +60,6 @@ export function renderComponentRoot(
     ctx,
     inheritAttrs
   } = instance
-  debugger
 
   let result
   let fallthroughAttrs

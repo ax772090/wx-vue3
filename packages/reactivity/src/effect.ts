@@ -96,7 +96,6 @@ export class ReactiveEffect<T = any> {
       parent = parent.parent
     }
     try {
-      debugger
       this.parent = activeEffect
       activeEffect = this
       shouldTrack = true
@@ -179,10 +178,10 @@ export function effect<T = any>(
 
   const _effect = new ReactiveEffect(fn)
   if (options) {
-    extend(_effect, options)
+    extend(_effect, options) // 将options挂到_effect上
     if (options.scope) recordEffectScope(_effect, options.scope)
   }
-  if (!options || !options.lazy) {
+  if (!options || !options.lazy) {// 没有指定options或者没有lazy属性时
     _effect.run()
   }
   const runner = _effect.run.bind(_effect) as ReactiveEffectRunner
@@ -214,7 +213,8 @@ export function resetTracking() {
 
 // 依赖收集
 export function track(target: object, type: TrackOpTypes, key: unknown) {
-  debugger
+  console.log('track',target,key);
+  
   if (shouldTrack && activeEffect) {
     let depsMap = targetMap.get(target)
     if (!depsMap) {
@@ -280,9 +280,9 @@ export function trigger(
     // collection being cleared
     // trigger all effects for target
     deps = [...depsMap.values()]
-  } else if (key === 'length' && isArray(target)) {
+  } else if (key === 'length' && isArray(target)) {// 操作目标是数组，并且修改了数组的 length 属性
     depsMap.forEach((dep, key) => {
-      if (key === 'length' || key >= (newValue as number)) {
+      if (key === 'length' || key >= (newValue as number)) {// 对于索引大于或者等于新的 length 值的元素
         deps.push(dep)
       }
     })
@@ -294,15 +294,15 @@ export function trigger(
 
     // also run for iteration key on ADD | DELETE | Map.SET
     switch (type) {
-      case TriggerOpTypes.ADD:
+      case TriggerOpTypes.ADD:// 新增操作
         if (!isArray(target)) {
-          deps.push(depsMap.get(ITERATE_KEY))
-          if (isMap(target)) {
+          deps.push(depsMap.get(ITERATE_KEY))// 对于对象，取得与ITERATE_KEY相关联的副作用函数
+          if (isMap(target)) {// 针对map的操作
             deps.push(depsMap.get(MAP_KEY_ITERATE_KEY))
           }
-        } else if (isIntegerKey(key)) {
+        } else if (isIntegerKey(key)) {// 针对索引，p1[5] = 2   key: 5 ,改变了数组的length
           // new index added to array -> length changes
-          deps.push(depsMap.get('length'))
+          deps.push(depsMap.get('length')) // 取得与数组length相关的副作用函数
         }
         break
       case TriggerOpTypes.DELETE:
@@ -370,7 +370,6 @@ function triggerEffect(
   effect: ReactiveEffect,
   debuggerEventExtraInfo?: DebuggerEventExtraInfo
 ) {
-  debugger
   if (effect !== activeEffect || effect.allowRecurse) {
     if (__DEV__ && effect.onTrigger) {
       effect.onTrigger(extend({ effect }, debuggerEventExtraInfo))

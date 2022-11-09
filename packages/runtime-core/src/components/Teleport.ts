@@ -93,6 +93,8 @@ export const TeleportImpl = {
       dynamicChildren = null
     }
 
+    // 1. 挂载
+    debugger
     if (n1 == null) {
       // insert anchors in the main view
       const placeholder = (n2.el = __DEV__

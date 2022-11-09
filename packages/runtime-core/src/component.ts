@@ -469,7 +469,7 @@ export function createComponentInstance(
   // inherit parent app context - or - if root, adopt from root vnode
   const appContext =
     (parent ? parent.appContext : vnode.appContext) || emptyAppContext
-
+// 组件实例上有这么多属性
   const instance: ComponentInternalInstance = {
     uid: uid++,
     vnode,
@@ -715,7 +715,7 @@ export function handleSetupResult(
   setupResult: unknown,
   isSSR: boolean
 ) {
-  // 如果是函数，会作为render函数
+  // 1. 如果是函数，会作为render函数
   if (isFunction(setupResult)) {
     // setup returned an inline render function
     if (__SSR__ && (instance.type as ComponentOptions).__ssrInlineRender) {
@@ -725,7 +725,7 @@ export function handleSetupResult(
     } else {
       instance.render = setupResult as InternalRenderFunction
     }
-    // 如果是对象，通过proxyRefs做一层ref 代理
+    // 2. 如果是对象，通过proxyRefs做一层ref 代理
   } else if (isObject(setupResult)) {
     if (__DEV__ && isVNode(setupResult)) {
       warn(

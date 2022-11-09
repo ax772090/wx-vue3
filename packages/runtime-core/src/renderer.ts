@@ -1223,6 +1223,7 @@ function baseCreateRenderer(
     // 1. 创建组件实例
     const instance: ComponentInternalInstance =
       compatMountInstance ||
+      // 将组建实例设置到vnode上，用于后续更新操作
       (initialVNode.component = createComponentInstance(
         initialVNode,
         parentComponent,
@@ -1399,6 +1400,7 @@ function baseCreateRenderer(
             startMeasure(instance, `render`)
           }
           // 2. 先获取子的vnode：subTree
+          // subTree就是组件执行完render函数后生成的vnode
           const subTree = (instance.subTree = renderComponentRoot(instance))
           if (__DEV__) {
             endMeasure(instance, `render`)
@@ -1577,11 +1579,11 @@ function baseCreateRenderer(
       }
     }
 
-    debugger
     // create reactive effect for rendering
+    // 依赖收集触发的核心effect
     const effect = (instance.effect = new ReactiveEffect(
       componentUpdateFn,
-      () => queueJob(update),
+      () => queueJob(update),// 调度器函数
       instance.scope // track it in component's effect scope
     ))
     // instance.update给实例上增加update方法，在更新的时候会使用
@@ -1870,7 +1872,7 @@ function baseCreateRenderer(
     // c (a b)
     // i = 0, e1 = -1, e2 = 0
     // e1:代表旧的结束位置，e2：新的结束位置
-    if (i > e1) {l// 说明在前面预处理过程中，所有旧子节点都处理完了
+    if (i > e1) {// 说明在前面预处理过程中，所有旧子节点都处理完了
       if (i <= e2) {// 说明预处理后，在新的一组子节点中还有未被处理的，这些节点视作新增节点，走挂载逻辑
         const nextPos = e2 + 1
         const anchor = nextPos < l2 ? (c2[nextPos] as VNode).el : parentAnchor

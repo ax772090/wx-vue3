@@ -8,5 +8,5 @@ import Test from './Test.vue'
 // window.VUE_DEVTOOLS_CONFIG = {
 //   defaultSelectedAppId: 'repl'
 // }
-debugger
+
 createApp(Test).mount('#app')

@@ -273,7 +273,9 @@ function doWatch(
     getter = () => traverse(baseGetter())
   }
 
+  // 用来存储用户注册的过期回调 ---- 网络请求竞态问题中用到
   let cleanup: () => void
+  // 定义
   let onCleanup: OnCleanup = (fn: () => void) => {
     cleanup = effect.onStop = () => {
       callWithErrorHandling(fn, instance, ErrorCodes.WATCH_CLEANUP)
@@ -304,6 +306,7 @@ function doWatch(
     }
     if (cb) {
       // watch(source, cb)
+      // 1. 副作用函数执行的结果作为新值
       const newValue = effect.run()
       if (
         deep ||
@@ -321,12 +324,14 @@ function doWatch(
         if (cleanup) {
           cleanup()
         }
+        // 2. watch(()=>target.xxx,(newValue,oldValue)=>{})
         callWithAsyncErrorHandling(cb, instance, ErrorCodes.WATCH_CALLBACK, [
           newValue,
           // pass undefined as the old value when it's changed for the first time
           oldValue === INITIAL_WATCHER_VALUE ? undefined : oldValue,
           onCleanup
         ])
+        // 3. 更新旧值
         oldValue = newValue
       }
     } else {
@@ -361,9 +366,11 @@ function doWatch(
 
   // 2. initial run
   if (cb) {
+    // 立即执行
     if (immediate) {
       job()
     } else {
+      // 有变化才执行
       oldValue = effect.run()
     }
   } else if (flush === 'post') {

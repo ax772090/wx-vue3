@@ -34,10 +34,10 @@ export interface SchedulerJob extends Function {
 
 export type SchedulerJobs = SchedulerJob | SchedulerJob[]
 
-let isFlushing = false
+let isFlushing = false// 是否正在刷新队列
 let isFlushPending = false
 
-const queue: SchedulerJob[] = []// 队列
+const queue: SchedulerJob[] = []// 定义任务队列
 let flushIndex = 0
 
 const pendingPostFlushCbs: SchedulerJob[] = []
@@ -47,7 +47,7 @@ let postFlushIndex = 0
 const resolvedPromise = /*#__PURE__*/ Promise.resolve() as Promise<any>
 let currentFlushPromise: Promise<void> | null = null
 
-const RECURSION_LIMIT = 100
+const RECURSION_LIMIT = 100 // 递归调用的最大数量
 type CountMap = Map<SchedulerJob, number>
 
 export function nextTick<T = void>(
@@ -75,7 +75,7 @@ function findInsertionIndex(id: number) {
 
   return start
 }
-
+// 每次调度时，将job添加到queue队列中
 export function queueJob(job: SchedulerJob) {
   // the dedupe search uses the startIndex argument of Array.includes()
   // by default the search index includes the current job that is being run
@@ -98,11 +98,12 @@ export function queueJob(job: SchedulerJob) {
     queueFlush()
   }
 }
-
+// 刷新队列
 function queueFlush() {
+  // 如果正在刷新，则什么都不做
   if (!isFlushing && !isFlushPending) {
-    isFlushPending = true
-    currentFlushPromise = resolvedPromise.then(flushJobs)
+    isFlushPending = true// 代表正在刷新
+    currentFlushPromise = resolvedPromise.then(flushJobs)// 微任务队列中执行jobs进行刷新
   }
 }
 
@@ -112,7 +113,7 @@ export function invalidateJob(job: SchedulerJob) {
     queue.splice(i, 1)
   }
 }
-
+// 将 cb 放到微任务队列，从而实现异步延迟执行
 export function queuePostFlushCb(cb: SchedulerJobs) {
   if (!isArray(cb)) {
     if (
@@ -235,6 +236,7 @@ function flushJobs(seen?: CountMap) {
           continue
         }
         // console.log(`running:`, job.id)
+        // job()执行
         callWithErrorHandling(job, null, ErrorCodes.SCHEDULER)
       }
     }

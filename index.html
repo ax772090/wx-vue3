@@ -9,35 +9,91 @@
 </head>
 
 <body>
-    <div id="app"></div>
+    <div id="app">
+        <!-- <input :modelValue="name" @update:modelValue="update"></input> -->
+        <!-- <p v-html="'<div>ab</div>'" v-text="'cd'">{{count}}</p> -->
+        <p>{{wx}}-{{age}}</p>
+        <!-- <p>{{fullName}}</p>
+        <p>{{proxyObj.wx}}-{{proxyObj.age}}</p> -->
+        <!-- <teleport to="body">
+            <p>ccc</p>
+        </teleport> -->
+
+    </div>
     <script src="./packages/vue/dist/vue.global.js"> </script>
     <script>
-        const { createApp, ref, reactive,shallowReactive, h, onMounted } = Vue
+        const { createApp, ref, reactive, shallowReactive, h, onMounted, effect, computed, watch ,toRefs} = Vue
+        let dummy
+        //     const obj = { wx: 'wx', age: 18 }
+        //     const arr = [1,2,3]
+        //     const p1 = reactive(arr)
+        //    console.log(p1.includes(p1[0]))
+        //     // const fullName = computed(() => p1.wx + p1.age)
+        //     // const p2 = reactive(arr)
+        //     effect(() => {
+        //         // console.log('effect',fullName.value);
+        //         // dummy = p1.name + p1.age
+        //         for (const num in p1) {
+        //             // console.log(num);
+        //         }
+
+        //     })
+        // p1[2] = '123'
+        // p1.length = 0
+
+        // p1.age++
+        // fullName.value
+        // p1.age++
+        // setTimeout(()=>{
+        //     p1.age = 19
+        //     // p2[4] = 5
+        // },2000)
+
 
         createApp({
             setup() {
-                debugger
                 const count = ref(0)
-                const obj = shallowReactive({ wx: 'wx', age: 18, addres: { a: 1, b: 2 } })
-                console.log('shallow',obj);
-                setTimeout(() => {
-                    // count.value++
-                    obj.addres.a = 5
-                }, 1000)
-                onMounted(() => {
-                    console.log('onMounted', count.value);
-                })
-                return { count, obj }
+                const name = ref('wx')
+                const originObj = { wx: 'wx', age: 18, addres: { a: 1, b: 2 } }
+                const proxyObj = reactive(originObj)
+                const ref1 = {...toRefs(proxyObj)}
+                debugger
+                proxyObj.a
+                // const fullName = computed(() => proxyObj.wx + proxyObj.age)
+                // for (const key in proxyObj) {
+                //     if (Object.hasOwnProperty.call(proxyObj, key)) {
+                //         console.log(key);
+                //     }
+                // }
+                // console.log(fullName.value);
+                // watch(() => fullName.value, (newValue, oldValue, onFn) => {
+                //     // proxyObj.age++
+                // })
+                // setTimeout(() => {
+                //     proxyObj.age++
+                //     // name.value += '------------'
+                // }, 1000)
+                // function update(e) {
+                //     console.log('ee', e);
+                // }
+                // onMounted(() => {
+                //     console.log('onMounted', count.value);
+                // })
+                // return { count, fullName, proxyObj, name, update }
+                return { ...ref1 }
             },
-            render() {
-                return h('div', null, [
-                    h('p', null, 'hello'),
-                    h('p', null, `count的值：${this.count}`),
-                    h('p', null, this.obj.wx),
-                    h('p', null, this.obj.age),
-                    h('p', null, this.obj.addres.a),
-                ])
-            }
+            // render() {
+            //     function Foo(props) {
+            //         return h('div', { style: { background: props.someProp } })
+            //     }
+            //     return h(Foo({ someProp: 'blue' }), null, [
+            //         h('p', null, 'hello'),
+            //         // h('p', null, `count的值：${this.count}`),
+            //         // h('p', null, this.obj.wx),
+            //         // h('p', null, this.obj.age),
+            //         // h('p', null, this.obj.addres.a),
+            //     ])
+            // }
         }).mount('#app')
     </script>
 

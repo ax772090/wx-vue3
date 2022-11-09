@@ -214,7 +214,7 @@ function createReactiveObject(
   if (targetType === TargetType.INVALID) {
     return target
   }
-  // 针对几何和其他类型做不同的处理
+  // 针对 集合类型 和 其他类型 做不同的处理
   const proxy = new Proxy(
     target,
     targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers

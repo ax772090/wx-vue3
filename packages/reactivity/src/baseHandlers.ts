@@ -52,7 +52,7 @@ const shallowReadonlyGet = /*#__PURE__*/ createGetter(true, true)
 
 const arrayInstrumentations = /*#__PURE__*/ createArrayInstrumentations()
 
-// 对数组的一些特殊处理
+// 对数组方法的重写
 function createArrayInstrumentations() {
   const instrumentations: Record<string, Function> = {}
   // instrument identity-sensitive Array methods to account for possible reactive
@@ -64,7 +64,7 @@ function createArrayInstrumentations() {
         track(arr, TrackOpTypes.GET, i + '')
       }
       // we run the method using the original args first (which may be reactive)
-      const res = arr[key](...args)
+      const res = arr[key](...args) // arr.includes(...args)
       if (res === -1 || res === false) {
         // if that didn't work, run it again using raw values.
         return arr[key](...args.map(toRaw))
@@ -77,8 +77,11 @@ function createArrayInstrumentations() {
   // which leads to infinite loops in some cases (#2137)
   ;(['push', 'pop', 'shift', 'unshift', 'splice'] as const).forEach(key => {
     instrumentations[key] = function (this: unknown[], ...args: unknown[]) {
-      pauseTracking()// 停止追踪
+      // 调用原始方法之前，停止追踪
+      pauseTracking()
+      // 上面这些方法的默认行为
       const res = (toRaw(this) as any)[key].apply(this, args)
+      // 之后恢复追踪
       resetTracking()
       return res
     }
@@ -88,6 +91,8 @@ function createArrayInstrumentations() {
 
 function createGetter(isReadonly = false, shallow = false) {
   return function get(target: Target, key: string | symbol, receiver: object) {
+    // console.log('get',target,key);
+    
     if (key === ReactiveFlags.IS_REACTIVE) {
       return !isReadonly
     } else if (key === ReactiveFlags.IS_READONLY) {
@@ -111,6 +116,8 @@ function createGetter(isReadonly = false, shallow = false) {
 
     const targetIsArray = isArray(target)
 
+    // 如果操作的目标对象是数组，并且 key存在于 arrayInstrumentations,
+    // 那么返回定义在 arrayInstrumentations 上的值
     if (!isReadonly && targetIsArray && hasOwn(arrayInstrumentations, key)) {
       return Reflect.get(arrayInstrumentations, key, receiver)
     }
@@ -122,7 +129,7 @@ function createGetter(isReadonly = false, shallow = false) {
     if (isSymbol(key) ? builtInSymbols.has(key) : isNonTrackableKeys(key)) {
       return res
     }
-    // 只读属性不需要依赖收集
+    // 只读属性不需要依赖收集，非只读才需要
     if (!isReadonly) {
       track(target, TrackOpTypes.GET, key)
     }
@@ -136,7 +143,7 @@ function createGetter(isReadonly = false, shallow = false) {
       // ref unwrapping - skip unwrap for Array + integer key.
       return targetIsArray && isIntegerKey(key) ? res : res.value
     }
-    // 如果结果是对象，递归调用reactive实现深响应
+    // 如果结果是对象，递归调用reactive实现深响应，递归调用readonly实现深只读
     if (isObject(res)) {
       // Convert returned value into a proxy as well. we do the isObject check
       // here to avoid invalid value warning. Also need to lazy access readonly
@@ -159,6 +166,8 @@ function createSetter(shallow = false) {
     value: unknown,
     receiver: object
   ): boolean {
+    console.log('set',target,key);
+    // 先获取旧值
     let oldValue = (target as any)[key]
     if (isReadonly(oldValue) && isRef(oldValue) && !isRef(value)) {
       return false
@@ -182,10 +191,11 @@ function createSetter(shallow = false) {
         : hasOwn(target, key)
     const result = Reflect.set(target, key, value, receiver)
     // don't trigger if target is something up in the prototype chain of original
+    // 只有当receiver是target的代理对象时才触发更新
     if (target === toRaw(receiver)) {
       if (!hadKey) {
         trigger(target, TriggerOpTypes.ADD, key, value)
-      } else if (hasChanged(value, oldValue)) {
+      } else if (hasChanged(value, oldValue)) {// 新旧值不相同时才触发更新
         trigger(target, TriggerOpTypes.SET, key, value, oldValue)
       }
     }
@@ -204,6 +214,7 @@ function deleteProperty(target: object, key: string | symbol): boolean {
 }
 
 function has(target: object, key: string | symbol): boolean {
+  debugger
   const result = Reflect.has(target, key)
   if (!isSymbol(key) || !builtInSymbols.has(key)) {
     track(target, TrackOpTypes.HAS, key)
@@ -215,7 +226,7 @@ function ownKeys(target: object): (string | symbol)[] {
   track(target, TrackOpTypes.ITERATE, isArray(target) ? 'length' : ITERATE_KEY)
   return Reflect.ownKeys(target)
 }
-
+// new proxy(target,nutableHandlers)
 export const mutableHandlers: ProxyHandler<object> = {
   get,
   set,
