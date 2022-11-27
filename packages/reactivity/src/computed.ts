@@ -58,7 +58,7 @@ export class ComputedRefImpl<T> {
     trackRefValue(self)
     if (self._dirty || !self._cacheable) {
       self._dirty = false
-      self._value = self.effect.run()! // 掉了run才会执行 getter
+      self._value = self.effect.run()! // 调用了run才会执行 getter
     }
     return self._value
   }

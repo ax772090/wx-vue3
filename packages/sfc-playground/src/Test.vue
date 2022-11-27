@@ -1,16 +1,10 @@
-<template>
-    <div class="wrap">
-        test
-        <p>{{count}}</p>
-    </div>
-</template>
+
 <script setup lang="ts">
-import { ref ,reactive} from 'vue'
-const count = ref(0)
+// import { ref, reactive, onBeforeMount, onMounted } from 'vue'
+import { useMouse } from './hooks/mouse'
+const { x, y } = useMouse()
 
 </script>
-<style scoped>
-.wrap {
-    color: pink;
-}
-</style>
+<template>
+    {{x}},{{y}}
+</template>
