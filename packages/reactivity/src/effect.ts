@@ -213,7 +213,6 @@ export function resetTracking() {
 
 // 依赖收集
 export function track(target: object, type: TrackOpTypes, key: unknown) {
-  console.log('track',target,key);
   
   if (shouldTrack && activeEffect) {
     let depsMap = targetMap.get(target)

@@ -13,6 +13,7 @@ importers:
       '@rollup/plugin-replace': ^2.3.4
       '@types/hash-sum': ^1.0.0
       '@types/jest': ^27.0.1
+      '@types/lodash-es': ^4.17.6
       '@types/node': ^16.4.7
       '@types/puppeteer': ^5.0.0
       '@typescript-eslint/parser': ^5.23.0
@@ -32,6 +33,7 @@ importers:
       jest: ^27.1.0
       lint-staged: ^10.2.10
       lodash: ^4.17.15
+      lodash-es: ^4.17.21
       marked: ^4.0.10
       minimist: ^1.2.0
       npm-run-all: ^4.1.5
@@ -62,6 +64,7 @@ importers:
       '@rollup/plugin-replace': 2.4.2_rollup@2.38.5
       '@types/hash-sum': 1.0.0
       '@types/jest': 27.0.3
+      '@types/lodash-es': 4.17.6
       '@types/node': 16.11.12
       '@types/puppeteer': 5.4.4
       '@typescript-eslint/parser': 5.23.0_td6yqss6ra3qoebludh4ctrhym
@@ -81,6 +84,7 @@ importers:
       jest: 27.4.4
       lint-staged: 10.5.4
       lodash: 4.17.21
+      lodash-es: 4.17.21
       marked: 4.0.10
       minimist: 1.2.5
       npm-run-all: 4.1.5
@@ -1158,6 +1162,16 @@ packages:
 
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
+    dev: true
+
+  /@types/lodash-es/4.17.6:
+    resolution: {integrity: sha512-R+zTeVUKDdfoRxpAryaQNRKk3105Rrgx2CFRClIgRGaqDTdjsm8h6IYA8ir584W3ePzkZfst5xIgDwYrlh9HLg==}
+    dependencies:
+      '@types/lodash': 4.14.191
+    dev: true
+
+  /@types/lodash/4.14.191:
+    resolution: {integrity: sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==}
     dev: true
 
   /@types/lru-cache/5.1.1:
@@ -5086,6 +5100,10 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       p-locate: 4.1.0
+    dev: true
+
+  /lodash-es/4.17.21:
+    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
     dev: true
 
   /lodash.camelcase/4.3.0:

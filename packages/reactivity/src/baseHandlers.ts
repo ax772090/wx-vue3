@@ -214,7 +214,6 @@ function deleteProperty(target: object, key: string | symbol): boolean {
 }
 
 function has(target: object, key: string | symbol): boolean {
-  debugger
   const result = Reflect.has(target, key)
   if (!isSymbol(key) || !builtInSymbols.has(key)) {
     track(target, TrackOpTypes.HAS, key)

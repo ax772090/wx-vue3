@@ -16,8 +16,8 @@ export const useMouse = () => {
   }
   // onMounted(() => window.addEventListener('mousemove', update))
   // onUnmounted(() => window.removeEventListener('mousemove', update))
-  return {
+  return [
     x,
     y
-  }
+  ]
 }
