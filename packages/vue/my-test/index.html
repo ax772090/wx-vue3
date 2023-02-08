@@ -12,30 +12,8 @@
 
     <div id="app">ab-{{ref1}}-{{value}}</div>
 
-    <script type="module" src="wx-vue3/packages/compiler-sfc/dist/compiler-sfc.esm-browser.js">
-        const { createApp} = Vue
-        console.log(Vue);
-        // const { createApp,computed,watch,ref,reactive ,VueCompilerSFC} =  Vue
-        // const obj = { name: 'wx', age: 18 }
-        // const proxy1 = reactive(obj)
-        // effect(() => {
-        //     proxy1.name
-        // })
-        // debugger
-        // const nameAge = computed(()=>{
-        //     console.log('aa');
-        //     return proxy1.name + proxy1.age
-        // })
-        // console.log(nameAge.value);
-
-        // effect(()=>{
-
-        // })
-
-        // setTimeout(() => {
-        //     proxy1.name = 'yc'
-        // }, 1000);
-
+    <script type="module">
+        import {createApp, ref, reactive} from '../dist/vue.esm-browser.js'
         createApp({
             setup() {
                 // const obj = reactive({
@@ -56,13 +34,13 @@
 
                 const ref1 = ref(1)
                 const ref2 = reactive({value: 2})
-                console.log(ref1,ref2);
                 return {
                     ref1,
                     ...ref2
                 }
             }
         }).mount('#app')
+
     </script>
 </body>
 
