@@ -73,7 +73,7 @@ export const createApp = ((...args) => {
     injectNativeTagCheck(app)
     injectCompilerOptionsCheck(app)
   }
-
+// 定义了mount方法的一个临时变量，方便在app.mount中继续掉用之前的mount
   const { mount } = app
   // 2. 重写了app对象本来的mount方法，这才是真正的mount，也就是我们平常代码里面用的就是这个
   // 这才是dom的挂载，app上那个是runtime-core，其它平台也会调用的，不一定是浏览器

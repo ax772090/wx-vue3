@@ -42,6 +42,7 @@ export class ComputedRefImpl<T> {
     isSSR: boolean
   ) {
     this.effect = new ReactiveEffect(getter, () => {
+      debugger
       if (!this._dirty) {
         this._dirty = true
         triggerRefValue(this)

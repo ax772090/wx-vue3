@@ -1206,7 +1206,16 @@ function baseCreateRenderer(
       updateComponent(n1, n2, optimized)
     }
   }
-
+/**
+ * 挂载组件
+ * @param initialVNode 
+ * @param container 
+ * @param anchor 
+ * @param parentComponent 
+ * @param parentSuspense 
+ * @param isSVG 
+ * @param optimized 
+ */
   const mountComponent: MountComponentFn = (
     initialVNode,
     container,
@@ -1330,7 +1339,9 @@ function baseCreateRenderer(
     isSVG,
     optimized
   ) => {
+    // 依赖收集收集到了这个函数，所以响应式数据发生变化，触发trigger，这个函数也会重新执行，这就是那个关键函数
     const componentUpdateFn = () => {
+      debugger
       // 是否已经挂载了，如果没有，那就是挂载操作，否则就是更新操作
       if (!instance.isMounted) {
         let vnodeHook: VNodeHook | null | undefined

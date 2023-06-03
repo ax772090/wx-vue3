@@ -661,6 +661,7 @@ function setupStatefulComponent(
 
     setCurrentInstance(instance)
     pauseTracking()
+    // setup执行结果
     const setupResult = callWithErrorHandling(
       setup,
       instance,

@@ -1,10 +1,16 @@
 import { EMPTY_ARR } from '@vue/shared'
-import { createApp, ref, nextTick, reactive } from '../src'
+import { createApp, ref, nextTick, reactive, onMounted } from '../src'
 
 describe('compiler + runtime integration', () => {
   it('should support runtime template compilation', () => {
     const container = document.createElement('div')
     const App = {
+      // setup() {
+      //   onMounted(()=>{
+      //     console.log('mounted');
+          
+      //   })
+      // },
       template: `{{ count }}`,
       data() {
         return {

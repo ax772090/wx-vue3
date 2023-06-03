@@ -2,46 +2,48 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vue3 源码调试</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue3 源码调试</title>
 </head>
 
 <body>
 
-    <div id="app">ab-{{ref1}}-{{value}}</div>
+  <!-- 从官网copy的例子，这里需要修改地址，并且地址需要是本地起的http服务的地址 -->
+  <script type="importmap">
+        {
+          "imports": {
+            "vue": "http://127.0.0.1:5501/wx-vue3/packages/vue/dist/vue.esm-browser.js"
+          }
+        }
+  </script>
 
-    <script type="module">
-        import {createApp, ref, reactive} from '../dist/vue.esm-browser.js'
-        createApp({
-            setup() {
-                // const obj = reactive({
-                //     firstName:'w',
-                //     secondName:'x'
-                // })
-                // const name = computed(()=>obj.firstName + obj.secondName)
-                // setTimeout(() => {
-                //     console.log('cc');
-                //     obj.firstName = 'aaa'
-                // }, 1000);
-                // watch(()=>obj.firstName,(newValue,oldValue)=>{
-                //     console.log(newValue,oldValue)
-                // })
-                // return {
-                //     name
-                // }
+  <div id="app">{{ comp }}</div>
 
-                const ref1 = ref(1)
-                const ref2 = reactive({value: 2})
-                return {
-                    ref1,
-                    ...ref2
-                }
-            }
-        }).mount('#app')
+  <script type="module">
+    import {createApp, computed} from 'vue'
+    const App = {
+      // data() {
+      //   return {
+      //     message: 'Hello Vue!'
+      //   }
+      // }
+      setup() {
+        const obj = {name: 'wx', age: 18}
+        const comp = computed(() => obj.name + ' love wyc')
+        console.log(comp);
+        return {
+          comp
+        }
+      }
+    }
 
-    </script>
+    createApp(App).mount('#app')
+  </script>
+
+  <!-- <script src="./test.ts"></script> -->
+
 </body>
 
 </html>

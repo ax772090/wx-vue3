@@ -1,7 +1,7 @@
 
 <script setup lang="ts">
-import { shuffle } from 'lodash-es'
-import { computed, h, inject, onMounted, onUnmounted, provide, reactive, ref, Fragment } from 'vue'
+import { reject, shuffle } from 'lodash-es'
+import { computed, h, inject, onMounted, onUnmounted, provide, reactive, ref, Fragment, defineAsyncComponent, Suspense } from 'vue'
 import { useMouse } from './hooks/mouse'
 import BaseLayout from './slots/baseLayout.vue'
 import List from './slots/list.vue'
@@ -12,8 +12,45 @@ import ProvideInject from './demo/provide-inject/Child.vue'
 import { i18nKey } from './constants/keys'
 import Modal from './demo/Modal.vue'
 import SimpleRouter from './demo/SimpleRouter/index.vue'
+// 定义一个函数式组件
+const DynamicHeading = (props,context)=>{
+    return h(`h${props.level}`,context.attrs,context.slots)
+}
+DynamicHeading.props = ['level']
 // import Foo from './foo.jsx'
-
+const LoadingComp = {
+    template:
+        `
+    <div>loading....</div>
+    `
+}
+const ReqAsyncComp = {
+    render: () => (h('div', null, `请求回来的异步组件`))
+}
+// const AsyncComp = defineAsyncComponent(() => {
+//   return new Promise((resolve, reject) => {
+//     // ...从服务器获取组件
+//     resolve(/* 获取到的组件 */)
+//   })
+// })
+const AsyncComp1 = defineAsyncComponent({
+    loader: () => new Promise((resovle, reject) => {
+        setTimeout(() => {
+            resovle(ReqAsyncComp)
+        }, 2000);
+    }),
+    delay: 1000,
+    loadingComponent: LoadingComp,
+})
+const AsyncComp2 = defineAsyncComponent({
+    loader: () => new Promise((resovle, reject) => {
+        setTimeout(() => {
+            resovle(ReqAsyncComp)
+        }, 2000);
+    }),
+    delay: 1000,
+    loadingComponent: LoadingComp,
+})
 
 const [x, y] = useMouse()
 let dynamicSlotName = ref<string>('default')
@@ -143,14 +180,30 @@ const count = ref(0)
 function MyComponent(props, { slots, emit, attrs }) {
     const { count } = props
     return (
-        h('div', null, 'ab')
+        h('div', null, `我是函数式组件:${count}`)
     )
 }
 
 </script>
 <template>
+    <!-- Suspense是实验功能异步组件 -->
+    <!-- <Suspense>
+            <AsyncComp1 />
+            <AsyncComp2 />
+        <template v-slot:fallback>
+            <h1>Loading...</h1>
+        </template>
+    </Suspense> -->
+    <AsyncComp1 />
+    <AsyncComp2 />
+    <!-- 异步组件 -->
     <!-- <Foo /> -->
     <!-- 函数式组件 -->
+    <div>函数式组件
+        <DynamicHeading :level = '2'>
+            <p>我是内容</p>
+        </DynamicHeading>
+    </div>
     <div>
         <MyComponent :count="count"></MyComponent>
     </div>

@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 
-import Test from './Test.vue'
+import App from './Test.vue'
+// import App from './Dev-test.vue'
 import i18nPlugin from './plugins/i18n'
 // import App from './App.vue'
 // import '@vue/repl/style.css'
@@ -9,7 +10,7 @@ import i18nPlugin from './plugins/i18n'
 // window.VUE_DEVTOOLS_CONFIG = {
 //   defaultSelectedAppId: 'repl'
 // }
-const app = createApp(Test)
+const app = createApp(App)
 app.use(i18nPlugin, {
   greetings: {
     hello: 'Bonjour!'

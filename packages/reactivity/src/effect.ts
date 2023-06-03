@@ -376,6 +376,7 @@ function triggerEffect(
     if (effect.scheduler) {
       effect.scheduler()
     } else {
+      // 这里重新执行副作用函数，关键
       effect.run()
     }
   }

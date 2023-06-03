@@ -16,6 +16,7 @@ describe('reactivity/reactive', () => {
     expect('foo' in observed).toBe(true)
     // ownKeys
     expect(Object.keys(observed)).toEqual(['foo'])
+    expect(Object.values(observed)).toEqual([1])
   })
 
   test('proto', () => {
@@ -101,6 +102,7 @@ describe('reactivity/reactive', () => {
   })
 
   test('observed value should proxy mutations to original (Object)', () => {
+    // 代理对象值改变，相应的原始对象也改变
     const original: any = { foo: 1 }
     const observed = reactive(original)
     // set
@@ -114,6 +116,7 @@ describe('reactivity/reactive', () => {
   })
 
   test('original value change should reflect in observed value (Object)', () => {
+    // 原始对象值改变，相应的代理对象也改变
     const original: any = { foo: 1 }
     const observed = reactive(original)
     // set
@@ -135,6 +138,7 @@ describe('reactivity/reactive', () => {
   })
 
   test('observing already observed value should return same Proxy', () => {
+    // 已经被代理过的值，如果再被代理，那么它们两者相同，因为源码内部做了缓存
     const original = { foo: 1 }
     const observed = reactive(original)
     const observed2 = reactive(observed)
@@ -142,6 +146,7 @@ describe('reactivity/reactive', () => {
   })
 
   test('observing the same value multiple times should return same Proxy', () => {
+    // 观测相同的值多次，返回的代理是相同的
     const original = { foo: 1 }
     const observed = reactive(original)
     const observed2 = reactive(original)
